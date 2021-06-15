@@ -10,7 +10,7 @@
 #include<errno.h>
 #define PORT	 8080
 #define MAXLINE 1024
-
+#define MAX 200
 void printInitialMessage() {
 	printf("Bem vindo ao servidor! Para executar uma ação, insira uma das seguintes entradas:\n1: Criar um perfil\n"
 	"2: Adicionar uma experiencia profissional\n"
@@ -22,9 +22,10 @@ void printInitialMessage() {
 	"8: Remover um perfil\n"
 	"exit: Sair\n\n");
 }
-void exchangeMessages(int sock, struct sockaddr * serverAddress) {
+void exchangeMessages(int sock, struct sockaddr_in* serverAddress) {
 	char buff[MAX];
 	int n, responseSize;
+	int len;
 	while(1) {
 		bzero(buff, sizeof(buff));
 		printf("Digite a mensagem a ser enviada: ");
@@ -107,7 +108,7 @@ int main() {
 
 
     printInitialMessage();
-    exchangeMessages(sock, serverAddress);
+    exchangeMessages(sock, &serverAddress);
 
 	close(sock);
 	return 0;
