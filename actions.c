@@ -207,7 +207,7 @@ char* createProfile(char email[30],	char firstName[20],	char lastName[20], char 
     }
 }
 
-char* addProfessionalExperience(char email[30], int sock) {
+char* addProfessionalExperience(char email[30], int sock, char profExp[300]) {
     FILE* file = NULL;
     file = fopen("files/users.csv", "r");
 
@@ -218,24 +218,24 @@ char* addProfessionalExperience(char email[30], int sock) {
 
     Profile searchedProfile;
     char* emailNoNewLine = removeNewLines(email);
-    char responseSize[MAX];
-    char profExp[300];
+    // char responseSize[MAX];
+    // char profExp[300];
     while(fread(&searchedProfile, sizeof(Profile), 1, file)) {
         printf("Lendo o arquivo...\n");
         if(!strcmp(searchedProfile.email, emailNoNewLine)) {
-            printf("Perfil encontrado! Solicitando informaçoes...\n");
-            size_t sizeProfExp = strlen(getProfExpUpdateMessage);
-            int size_message = (int)(sizeProfExp);
-            sprintf(responseSize, "%d", size_message);
+            printf("Perfil encontrado! \n");
+            // size_t sizeProfExp = strlen(getProfExpUpdateMessage);
+            // int size_message = (int)(sizeProfExp);
+            // sprintf(responseSize, "%d", size_message);
 
-            printf("Tamanho da resposta: %s\n", responseSize);
-            printf("Enviando solicitaçao do experiencia...\n");
-            write(sock, responseSize, strlen(responseSize)+1);
-            printf("Tamanho da resposta enviado...\n");
-            write(sock, getProfExpUpdateMessage, strlen(getProfExpUpdateMessage)+1);
-            printf("Mensagem enviada...\n");
-            read(sock, profExp, sizeof(profExp));
-            printf("experiencia lida...(%s)\n", profExp);
+            // printf("Tamanho da resposta: %s\n", responseSize);
+            // printf("Enviando solicitaçao do experiencia...\n");
+            // write(sock, responseSize, strlen(responseSize)+1);
+            // printf("Tamanho da resposta enviado...\n");
+            // write(sock, getProfExpUpdateMessage, strlen(getProfExpUpdateMessage)+1);
+            // printf("Mensagem enviada...\n");
+            // read(sock, profExp, sizeof(profExp));
+            // printf("experiencia lida...(%s)\n", profExp);
             char* profExpNoNewLine = removeNewLinesProfExp(profExp);
             strcpy(searchedProfile.professionalExperience,profExpNoNewLine);
             fwrite (&searchedProfile, sizeof(Profile), 1,file);
@@ -429,25 +429,25 @@ int treatClientActionRequest(int sock, char* request, struct sockaddr_in clientA
                 createProfileAction(sock, request, clientAddress);
                 break;
             case 2:
-                addProfessionalExperienceAction(sock);
+                addProfessionalExperienceAction(sock, request, clientAddress);
                 break;
             case 3:
-                listGraduatedOnCourseAction(sock);
+                listGraduatedOnCourseAction(sock, request, clientAddress);
                 break;
             case 4:
-                listHasSkillAction(sock);
+                listHasSkillAction(sock, request, clientAddress);
                 break;
             case 5:
-                listGraduatedOnYearAction(sock);
+                listGraduatedOnYearAction(sock, request, clientAddress);
                 break;
             case 6:
-                listAllProfilesAction(sock);
+                listAllProfilesAction(sock, request, clientAddress);
                 break;
             case 7:
                 getProfileInfoAction(sock, request, clientAddress);
                 break;
             case 8:
-                removeProfileAction(sock);
+                removeProfileAction(sock, request, clientAddress);
                 break;
             default: 
                 printf("Açao invalida!>%d<\n",sock);
@@ -463,12 +463,11 @@ int createProfileAction(int sock, char* response, struct sockaddr_in clientAddre
     char* content;
     char email[30], firstName[20], lastName[20], residence[30], academicBackground[50], graduationYear[4], skills[300],
 	    profExp[300], responseSize[MAX];
-    int size_message = 0;
+    // int size_message = 0;
     // int size_message_teste = 0;
     bzero(responseSize, sizeof(responseSize));
 
     char * token = strtok(response, ";");
-   // loop through the string to extract all other tokens
     token =strtok(NULL, ";");
     strcpy(email, token);
     // printf( " %s\n", email ); 
@@ -498,9 +497,9 @@ int createProfileAction(int sock, char* response, struct sockaddr_in clientAddre
 
     content = createProfile(email,firstName, lastName, residence, academicBackground, graduationYear, skills, profExp);
     
-    size_t sizeFinalMessage = strlen(content);
-    size_message = (int)(sizeFinalMessage);
-    sprintf(responseSize, "%d", size_message);
+    // size_t sizeFinalMessage = strlen(content);
+    // size_message = (int)(sizeFinalMessage);
+    // sprintf(responseSize, "%d", size_message);
     sendto(sock, (const char *)content, strlen(content),
 		MSG_CONFIRM, (const struct sockaddr *) &clientAddress,
 				sizeof(clientAddress));
@@ -511,123 +510,134 @@ int createProfileAction(int sock, char* response, struct sockaddr_in clientAddre
     return 0;
 }
 
-int addProfessionalExperienceAction(int sock){
+int addProfessionalExperienceAction(int sock, char* request,  struct sockaddr_in clientAddress){
     char* content;
-    char email[30], responseSize[MAX];
-    bzero(responseSize, sizeof(responseSize));
+    char email[30], profExp[300];
+    char * token = strtok(request, ";");
+    token =strtok(NULL, ";");
+    strcpy(email, token);
+    token = strtok(NULL, ";");
+    strcpy(profExp, token);
+    // printf("Tamanho da resposta: %s\n", responseSize);
+    // write(sock, responseSize, strlen(responseSize)+1);
+    // printf("Tamanho da resposta enviado...\n");
+    // printf("Enviando solicitaçao do email...\n");
+    // write(sock, getEmailMessage, strlen(getEmailMessage)+1);
+    // printf("Mensagem enviada...\n");
+    // read(sock, email, sizeof(email));
+    // printf("Curso lido...(%s)\n", email);
+    content = addProfessionalExperience(email,sock, profExp);
+    sendto(sock, (const char *)content, strlen(content),
+		MSG_CONFIRM, (const struct sockaddr *) &clientAddress,
+				sizeof(clientAddress));
+    // size_t sizeFinalMessage = strlen(content);
+    // size_message = (int)(sizeFinalMessage);
+    // sprintf(responseSize, "%d", size_message);
 
-    size_t size = strlen(getEmailMessage);
-    int size_message = (int)(size);
-    sprintf(responseSize, "%d", size_message);
-    
-    printf("Tamanho da resposta: %s\n", responseSize);
-    write(sock, responseSize, strlen(responseSize)+1);
-    printf("Tamanho da resposta enviado...\n");
-    printf("Enviando solicitaçao do email...\n");
-    write(sock, getEmailMessage, strlen(getEmailMessage)+1);
-    printf("Mensagem enviada...\n");
-    read(sock, email, sizeof(email));
-    printf("Curso lido...(%s)\n", email);
-    content = addProfessionalExperience(email,sock);
-    size_t sizeFinalMessage = strlen(content);
-    size_message = (int)(sizeFinalMessage);
-    sprintf(responseSize, "%d", size_message);
-
-    write(sock, responseSize, strlen(responseSize)+1);
-    write(sock, content, strlen(content)+1);
+    // write(sock, responseSize, strlen(responseSize)+1);
+    // write(sock, content, strlen(content)+1);
     printf("Conteudo enviado...\n");
     return 0;
 }
 
 
-int listGraduatedOnCourseAction(int sock) {
+int listGraduatedOnCourseAction(int sock, char* request,  struct sockaddr_in clientAddress) {
     char* content;
-    char course[50], responseSize[MAX];
-    bzero(responseSize, sizeof(responseSize));
-
-    size_t size = strlen(getCourseMessage);
-    int size_message = (int)(size);
-    sprintf(responseSize, "%d", size_message);
+    char course[50];
+    char* token = strtok(request, ";");
+    token = strtok(NULL, ";");
+    strcpy(course, token);
     
-    printf("Tamanho da resposta: %s\n", responseSize);
-    write(sock, responseSize, strlen(responseSize)+1);
-    printf("Tamanho da resposta enviado...\n");
-    printf("Enviando solicitaçao do curso...\n");
-    write(sock, getCourseMessage, strlen(getCourseMessage)+1);
-    printf("Mensagem enviada...\n");
-    read(sock, course, sizeof(course));
-    printf("Curso lido...(%s)\n", course);
+    // printf("Tamanho da resposta: %s\n", responseSize);
+    // write(sock, responseSize, strlen(responseSize)+1);
+    // printf("Tamanho da resposta enviado...\n");
+    // printf("Enviando solicitaçao do curso...\n");
+    // write(sock, getCourseMessage, strlen(getCourseMessage)+1);
+    // printf("Mensagem enviada...\n");
+    // read(sock, course, sizeof(course));
+    // printf("Curso lido...(%s)\n", course);
     content = listGraduatedOnCourse(course);
 
-    size_t sizeFinalMessage = strlen(content);
-    size_message = (int)(sizeFinalMessage);
-    sprintf(responseSize, "%d", size_message);
-
-    write(sock, responseSize, strlen(responseSize)+1);
-    write(sock, content, strlen(content)+1);
+    // size_t sizeFinalMessage = strlen(content);
+    // size_message = (int)(sizeFinalMessage);
+    // sprintf(responseSize, "%d", size_message);
+    sendto(sock, (const char *)content, strlen(content),
+		MSG_CONFIRM, (const struct sockaddr *) &clientAddress,
+				sizeof(clientAddress));
+    // write(sock, responseSize, strlen(responseSize)+1);
+    // write(sock, content, strlen(content)+1);
     printf("Conteudo enviado...\n");
     return 0;
 }
 
-int listHasSkillAction(int sock){
+int listHasSkillAction(int sock, char* request,  struct sockaddr_in clientAddress){
     char* content;
-    char skill[50], responseSize[MAX];
-    bzero(responseSize, sizeof(responseSize));
+    char skill[50];
+    // bzero(responseSize, sizeof(responseSize));
+    char* token = strtok(request, ";");
+    token = strtok(NULL, ";");
+    strcpy(skill, token);
 
+    // size_t size = strlen(getSkillMessage); 
+    // int size_message = (int)(size);
+    // sprintf(responseSize, "%d", size_message);
 
-    size_t size = strlen(getSkillMessage); 
-    int size_message = (int)(size);
-    sprintf(responseSize, "%d", size_message);
-
-    printf("Tamanho da resposta: %s\n", responseSize);
-    printf("Enviando solicitaçao da habilidade...\n");
-    write(sock, responseSize, strlen(responseSize)+1);
-    printf("Tamanho da resposta enviado...\n");
-    write(sock, getSkillMessage, strlen(getSkillMessage)+1);
-    printf("Mensagem enviada...\n");
-    read(sock, skill, sizeof(skill));
-    printf("Habilidade lida...(%s)\n", skill);
+    // printf("Tamanho da resposta: %s\n", responseSize);
+    // printf("Enviando solicitaçao da habilidade...\n");
+    // write(sock, responseSize, strlen(responseSize)+1);
+    // printf("Tamanho da resposta enviado...\n");
+    // write(sock, getSkillMessage, strlen(getSkillMessage)+1);
+    // printf("Mensagem enviada...\n");
+    // read(sock, skill, sizeof(skill));
+    // printf("Habilidade lida...(%s)\n", skill);
 
     content = listHasSkill(skill);
 
-    size_t sizeFinalMessage = strlen(content);
-    size_message = (int)(sizeFinalMessage);
-    sprintf(responseSize, "%d", size_message);
+    // size_t sizeFinalMessage = strlen(content);
+    // size_message = (int)(sizeFinalMessage);
+    // sprintf(responseSize, "%d", size_message);
 
-    write(sock, responseSize, strlen(responseSize)+1);
-    write(sock, content, strlen(content)+1);
+    // write(sock, responseSize, strlen(responseSize)+1);
+    // write(sock, content, strlen(content)+1);
+    sendto(sock, (const char *)content, strlen(content),
+		MSG_CONFIRM, (const struct sockaddr *) &clientAddress,
+				sizeof(clientAddress));
     printf("Conteudo enviado...\n");
     return 0;
 }
 
 // TODO corrigir recebimento do ano (ultimo caractere esta bugado)
-int listGraduatedOnYearAction(int sock) {
+int listGraduatedOnYearAction(int sock, char* request,  struct sockaddr_in clientAddress) {
     char* content;
-    char year[4], responseSize[MAX];
-    bzero(responseSize, sizeof(responseSize));
+    char year[4];
+    char* token = strtok(request, ";");
+    token = strtok(NULL, ";");
+    strcpy(year, token);
 
-    sprintf(responseSize, "%ld", strlen(getYearMessage)+1);
-    printf("Tamanho da resposta: %s\n", responseSize);
-    printf("Enviando solicitaçao do ano...\n");
-    write(sock, responseSize, strlen(responseSize)+1);
-    printf("\tTamanho da resposta enviado...\n");
-    write(sock, getYearMessage, strlen(getYearMessage)+1);
-    printf("\tSolicitaçao do ano enviada...\n");
-    read(sock, year, sizeof(year));
-    printf("\tAno lido...(%s)\n", year);
+    // sprintf(responseSize, "%ld", strlen(getYearMessage)+1);
+    // printf("Tamanho da resposta: %s\n", responseSize);
+    // printf("Enviando solicitaçao do ano...\n");
+    // write(sock, responseSize, strlen(responseSize)+1);
+    // printf("\tTamanho da resposta enviado...\n");
+    // write(sock, getYearMessage, strlen(getYearMessage)+1);
+    // printf("\tSolicitaçao do ano enviada...\n");
+    // read(sock, year, sizeof(year));
+    // printf("\tAno lido...(%s)\n", year);
    
     content = listGraduatedOnYear(year);
+    sendto(sock, (const char *)content, strlen(content),
+		MSG_CONFIRM, (const struct sockaddr *) &clientAddress,
+				sizeof(clientAddress));
+    // size_t sizeFinalMessage = strlen(content);
+    // sprintf(responseSize, "%d", (int) sizeFinalMessage);
 
-    size_t sizeFinalMessage = strlen(content);
-    sprintf(responseSize, "%d", (int) sizeFinalMessage);
-
-    write(sock, responseSize, strlen(responseSize)+1);
-    write(sock, content, strlen(content)+1);
+    // write(sock, responseSize, strlen(responseSize)+1);
+    // write(sock, content, strlen(content)+1);
     printf("Conteudo enviado...\n");
     return 0;
 }
 
-int listAllProfilesAction(int sock) {
+int listAllProfilesAction(int sock, char* request,  struct sockaddr_in clientAddress) {
     // Abre o arquivo dos usuarios
     FILE* file = NULL;
     file = fopen("files/users.csv", "r");
@@ -646,7 +656,10 @@ int listAllProfilesAction(int sock) {
                         searchedProfile.lastName, searchedProfile.academicBackground);
     }
 
-    write(sock, responseSize, strlen(responseSize)+1);
+    // write(sock, responseSize, strlen(responseSize)+1);
+    sendto(sock, (const char *)responseSize, (strlen(responseSize)+1),
+		MSG_CONFIRM, (const struct sockaddr *) &clientAddress,
+				sizeof(clientAddress));
     fclose(file);
     return 0;
 }
@@ -677,23 +690,28 @@ int getProfileInfoAction(int sock, char* request,  struct sockaddr_in clientAddr
     return 0;
 }
 
-int removeProfileAction(int sock){
-    char email[30], responseSize[MAX];
-    bzero(responseSize, sizeof(responseSize));
+int removeProfileAction(int sock, char* request,  struct sockaddr_in clientAddress){
+    char email[30];
+    char* token = strtok(request, ";");
+    token = strtok(NULL, ";");
+    strcpy(email, token);
 
-    sprintf(responseSize, "%ld", strlen(getEmailRemoveMessage)); 
-    printf("Enviando solicitaçao do email...\n");
-    write(sock, responseSize, strlen(responseSize)+1);
-    write(sock, getEmailRemoveMessage, strlen(getEmailRemoveMessage)+1);
-    read(sock, email, sizeof(email));
+    // sprintf(responseSize, "%ld", strlen(getEmailRemoveMessage)); 
+    // printf("Enviando solicitaçao do email...\n");
+    // write(sock, responseSize, strlen(responseSize)+1);
+    // write(sock, getEmailRemoveMessage, strlen(getEmailRemoveMessage)+1);
+    // read(sock, email, sizeof(email));
     char* email2 = removeNewLinesEmail(email);
     char* content = removeProfile(email2);
 
-    size_t sizeFinalMessage = strlen(content);
-    sprintf(responseSize, "%d", (int) sizeFinalMessage);
+    // size_t sizeFinalMessage = strlen(content);
+    // sprintf(responseSize, "%d", (int) sizeFinalMessage);
 
-    write(sock, responseSize, strlen(responseSize)+1);
-    write(sock, content, strlen(content)+1);
+    // write(sock, responseSize, strlen(responseSize)+1);
+    // write(sock, content, strlen(content)+1);
+    sendto(sock, (const char *)content, strlen(content),
+			MSG_CONFIRM, (const struct sockaddr *) &clientAddress,
+				sizeof(clientAddress));
     printf("%s\n", content);
     return 0;
 }

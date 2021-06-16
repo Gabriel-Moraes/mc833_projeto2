@@ -63,7 +63,8 @@ void exchangeMessages(int sock, struct sockaddr_in clientAddress, char* buff) {
 }
 // Driver code
 int main() {
-	char buffer[MAXLINE];
+	char buffer[MAX];
+	bzero(buffer, MAX);
 	char *hello = "Hello from server";
 	struct sockaddr_in serverAddress, clientAddress;
 	// int client_socket[10];
@@ -73,7 +74,7 @@ int main() {
 	// 	client_socket[i] = 0;
 	// }
     // Cria o socket mestre
-	master_socket = socket(AF_INET, SOCK_STREAM, 0);
+	master_socket = socket(AF_INET, SOCK_DGRAM, 0);
 	if (master_socket == 0) {
 		printf("Falha ao criar o socket... Erro: %d\n", errno);
 		exit(-1);
@@ -109,10 +110,10 @@ int main() {
 		int n;
 		memset(&serverAddress, 0, sizeof(serverAddress));
 		memset(&clientAddress, 0, sizeof(clientAddress));
-		socklen_t lenAddress = sizeof(clientAddress); //len is value/resuslt
+		socklen_t lenAddress = sizeof(clientAddress); 
 		//para ler o dado que está vindo do cliente
 		printf("lendo mensagem do cliente...\n");
-		n = recvfrom(master_socket, (char *)buffer, MAXLINE,
+		n = recvfrom(master_socket, (char *)buffer, MAX,
 					MSG_WAITALL, ( struct sockaddr *) &clientAddress,
 					&lenAddress);
 		buffer[n] = '\0';

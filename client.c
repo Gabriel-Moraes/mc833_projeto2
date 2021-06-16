@@ -42,7 +42,7 @@ void exchangeMessages(int sock, struct sockaddr_in* serverAddress) {
 		bzero(buff, sizeof(buff));
 
 		// Le o tamanho do retorno
-        responseSize = recvfrom(sock, (char *)buff, MAXLINE,
+        responseSize = recvfrom(sock, (char *)buff, MAX,
 				MSG_WAITALL, (struct sockaddr *) &serverAddress,
 				&len);
 	    buff[n] = '\0';
@@ -74,9 +74,8 @@ void exchangeMessages(int sock, struct sockaddr_in* serverAddress) {
 // Driver code
 int main() {
 	int sockfd, sock;
-	char buff[MAXLINE];
-	char *hello = "Hello from client";
-	struct sockaddr_in	 serverAddress;
+	char buff[MAX];
+	struct sockaddr_in serverAddress;
 
     // Cria o socket
 	sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -93,21 +92,21 @@ int main() {
 	serverAddress.sin_port = htons(PORT);
 	serverAddress.sin_addr.s_addr = INADDR_ANY;
 	
-	int n, len;
+	// int n, len;
 	
-	sendto(sock, (const char *)hello, strlen(hello),
-		MSG_CONFIRM, (const struct sockaddr *) &serverAddress,
-			sizeof(serverAddress));
-	printf("mensagem inicial enviada.\n");
+	// // sendto(sock, (const char *)hello, strlen(hello),
+	// // 	MSG_CONFIRM, (const struct sockaddr *) &serverAddress,
+	// // 		sizeof(serverAddress));
+	// // printf("mensagem inicial enviada.\n");
 		
-	n = recvfrom(sock, (char *)buff, MAXLINE,
-				MSG_WAITALL, (struct sockaddr *) &serverAddress,
-				&len);
-	buff[n] = '\0';
-	printf("Server : %s\n", buff);
+	// // n = recvfrom(sock, (char *)buff, MAXLINE,
+	// // 			MSG_WAITALL, (struct sockaddr *) &serverAddress,
+	// // 			&len);
+	// buff[n] = '\0';
+	// printf("Server : %s\n", buff);
 
 
-    printInitialMessage();
+    // printInitialMessage();
     exchangeMessages(sock, &serverAddress);
 
 	close(sock);

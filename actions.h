@@ -22,10 +22,10 @@ typedef struct Profile {
 
 int treatClientActionRequest(int sock, char* request, struct sockaddr_in clientAddress); 
 int createProfileAction(int sock, char* response, struct sockaddr_in clientAddress);
-int addProfessionalExperienceAction(int sock);
-int listGraduatedOnCourseAction(int sock);
-int listHasSkillAction(int sock);
-int listGraduatedOnYearAction(int sock);
-int listAllProfilesAction(int sock);
+int addProfessionalExperienceAction(int sock, char* request,  struct sockaddr_in clientAddress);
+int listGraduatedOnCourseAction(int sock, char* request,  struct sockaddr_in clientAddress);
+int listHasSkillAction(int sock, char* request,  struct sockaddr_in clientAddress);
+int listGraduatedOnYearAction(int sock, char* request,  struct sockaddr_in clientAddress);
+int listAllProfilesAction(int sock, char* request,  struct sockaddr_in clientAddress);
 int getProfileInfoAction(int sock, char* request,  struct sockaddr_in clientAddress);
-int removeProfileAction(int sock);
+int removeProfileAction(int sock, char* request,  struct sockaddr_in clientAddress);
