@@ -26,59 +26,52 @@ char* removeNewLinesServer(char* data){
     return data;
 }
 
-void exchangeMessages(int sock, struct sockaddr_in clientAdress) {
-    char buff[MAX];
-    socklen_t lenAddress = sizeof(clientAdress);
+void exchangeMessages(int sock, struct sockaddr_in clientAddress, char* buff) {
+    // char buff[MAX];
+    socklen_t lenAddress = sizeof(clientAddress);
     // Loop infinito para manter a troca de mensagens
-    while (1) {
-		// Zera o conteúdo do buffer
-        bzero(buff, MAX);
-
-        // Le a mensagem recebida e copia para o buffer
-        read(sock, buff, sizeof(buff));
-
-		// Printa a mensagem recebida
-        printf("Mensagem recebida do cliente %d: %s\n", sock, buff);
-		char* buff2 = removeNewLinesServer(buff);
-		printf("esse e o buffer %s<\n", buff);
-		printf("esse e o sock %d<\n", sock);
-		
-		int requestError = treatClientActionRequest(sock, buff2);
-		if (requestError == -2) {
-	        // Caso o retorno seja -2, fecha a conexao
-			// write(sock, "5", 2);
-			// write(sock, "exit\n", 5);
-            sendto(sock, "5", strlen("5"),
-		MSG_CONFIRM, (const struct sockaddr *) &clientAdress,
-			lenAddress);
-            sendto(sock, "exit\n", strlen("exit\n"),
-		MSG_CONFIRM, (const struct sockaddr *) &clientAdress,
-			lenAddress);
-			printf("Cliente %d saiu do servidor...\n", sock);
-            break;
-		} else if (requestError < 0) {
-
-            sendto(sock, "16", strlen("16"),
-		MSG_CONFIRM, (const struct sockaddr *) &clientAdress,
-			lenAddress);
-            sendto(sock, "Açao invalida!\n", strlen("Açao invalida!\n"),
-		MSG_CONFIRM, (const struct sockaddr *) &clientAdress,
-			lenAddress);
-			printf("requisicao: %d", requestError);
-		}
-    }
+	// Zera o conteúdo do buffer
+    // bzero(buff, MAX);
+    // Le a mensagem recebida e copia para o buffer
+    // read(sock, buff, sizeof(buff));
+	// Printa a mensagem recebida
+    // printf("Mensagem recebida do cliente %d: %s\n", sock, buff);
+	char* buff2 = removeNewLinesServer(buff);
+	printf("esse e o buffer %s<\n", buff);
+	printf("esse e o sock %d<\n", sock);
+	
+	int requestError = treatClientActionRequest(sock, buff2, clientAddress);
+	if (requestError == -2) {
+	    
+        sendto(sock, "5", strlen("5"),
+	MSG_CONFIRM, (const struct sockaddr *) &clientAddress,
+		lenAddress);
+        sendto(sock, "exit\n", strlen("exit\n"),
+	MSG_CONFIRM, (const struct sockaddr *) &clientAddress,
+		lenAddress);
+		printf("Cliente %d saiu do servidor...\n", sock);
+	} else if (requestError < 0) {
+        sendto(sock, "16", strlen("16"),
+	MSG_CONFIRM, (const struct sockaddr *) &clientAddress,
+		lenAddress);
+        sendto(sock, "Açao invalida!\n", strlen("Açao invalida!\n"),
+	MSG_CONFIRM, (const struct sockaddr *) &clientAddress,
+		lenAddress);
+		printf("requisicao: %d", requestError);
+	}
+    
 }
 // Driver code
 int main() {
 	char buffer[MAXLINE];
 	char *hello = "Hello from server";
-	struct sockaddr_in serverAddress, clientAdress;
-	int client_socket[10];
-    int i, master_socket;
+	struct sockaddr_in serverAddress, clientAddress;
+	// int client_socket[10];
+    int master_socket;
     // Inicializa o vetor de sockets 
-	for (i=0; i < 10; i++) {
-		client_socket[i] = 0;
-	}
+	// for (i=0; i < 10; i++) {
+	// 	client_socket[i] = 0;
+	// }
     // Cria o socket mestre
 	master_socket = socket(AF_INET, SOCK_STREAM, 0);
 	if (master_socket == 0) {
@@ -95,8 +88,8 @@ int main() {
 	// 	exit(EXIT_FAILURE);
 	// }
 	
-	memset(&serverAddress, 0, sizeof(serverAddress));
-	memset(&clientAdress, 0, sizeof(clientAdress));
+	// memset(&serverAddress, 0, sizeof(serverAddress));
+	// memset(&clientAdress, 0, sizeof(clientAdress));
 	
 	// Atribui valores da porta, do tipo de IP e dos endereços aceitos para o servidor
 	serverAddress.sin_family = AF_INET; // IPv4
@@ -112,24 +105,27 @@ int main() {
 	} else {
 		printf("Bind realizado com sucesso!\n");
 	}
-	
-	int n;
+	while (1) {
+		int n;
+		memset(&serverAddress, 0, sizeof(serverAddress));
+		memset(&clientAddress, 0, sizeof(clientAddress));
+		socklen_t lenAddress = sizeof(clientAddress); //len is value/resuslt
+		//para ler o dado que está vindo do cliente
+		printf("lendo mensagem do cliente...\n");
+		n = recvfrom(master_socket, (char *)buffer, MAXLINE,
+					MSG_WAITALL, ( struct sockaddr *) &clientAddress,
+					&lenAddress);
+		buffer[n] = '\0';
+		printf("Mensagem recebida do Cliente : %s\n", buffer);
+		
+		exchangeMessages(master_socket, clientAddress, buffer);
 
-	socklen_t lenAddress = sizeof(clientAdress); //len is value/resuslt
-    //para ler o dado que está vindo do cliente
-    printf("lendo mensagem do cliente...\n");
-	n = recvfrom(master_socket, (char *)buffer, MAXLINE,
-				MSG_WAITALL, ( struct sockaddr *) &clientAdress,
-				&lenAddress);
-	buffer[n] = '\0';
-	printf("Mensagem recebida do Cliente : %s\n", buffer);
+		sendto(master_socket, (const char *)hello, strlen(hello),
+			MSG_CONFIRM, (const struct sockaddr *) &clientAddress,
+				lenAddress);
+		printf("Hello message sent.\n");
+	}
 	
-    exchangeMessages(master_socket, clientAdress);
-
-    sendto(master_socket, (const char *)hello, strlen(hello),
-		MSG_CONFIRM, (const struct sockaddr *) &clientAdress,
-			lenAddress);
-	printf("Hello message sent.\n");
 	
 	return 0;
 }

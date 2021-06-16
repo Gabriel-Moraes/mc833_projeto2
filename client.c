@@ -98,7 +98,7 @@ int main() {
 	sendto(sock, (const char *)hello, strlen(hello),
 		MSG_CONFIRM, (const struct sockaddr *) &serverAddress,
 			sizeof(serverAddress));
-	printf("Hello message sent.\n");
+	printf("mensagem inicial enviada.\n");
 		
 	n = recvfrom(sock, (char *)buff, MAXLINE,
 				MSG_WAITALL, (struct sockaddr *) &serverAddress,

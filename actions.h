@@ -3,7 +3,13 @@
 #include <string.h>
 #include <unistd.h>
 
-typedef struct profile {
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <errno.h>
+
+typedef struct Profile {
 	char email[30];
 	char firstName[20];
 	char lastName[20];
@@ -14,12 +20,12 @@ typedef struct profile {
 	char professionalExperience[300];
 } Profile;
 
-int treatClientActionRequest(int sock, char* request); 
-int createProfileAction(int sock);
+int treatClientActionRequest(int sock, char* request, struct sockaddr_in clientAddress); 
+int createProfileAction(int sock, char* response, struct sockaddr_in clientAddress);
 int addProfessionalExperienceAction(int sock);
 int listGraduatedOnCourseAction(int sock);
 int listHasSkillAction(int sock);
 int listGraduatedOnYearAction(int sock);
 int listAllProfilesAction(int sock);
-int getProfileInfoAction(int sock);
+int getProfileInfoAction(int sock, char* request,  struct sockaddr_in clientAddress);
 int removeProfileAction(int sock);
