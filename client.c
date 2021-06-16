@@ -7,8 +7,8 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include<errno.h>
-#define PORT	 8080
+#include <errno.h>
+#define PORT 8080
 #define MAXLINE 1024
 #define MAX 200
 void printInitialMessage() {
@@ -22,7 +22,7 @@ void printInitialMessage() {
 	"8: Remover um perfil\n"
 	"exit: Sair\n\n");
 }
-void exchangeMessages(int sock, struct sockaddr_in* serverAddress) {
+void exchangeMessages(int sock, struct sockaddr_in serverAddress) {
 	char buff[MAX];
 	int n, responseSize;
 	int len;
@@ -35,9 +35,11 @@ void exchangeMessages(int sock, struct sockaddr_in* serverAddress) {
 		printf("Enviando mensagem: %s\n", buff);
 		// Escreve a mensagem excluindo o '\n'
 
-        sendto(sock, buff, strlen(buff)-1,
+        sendto(sock, (char*) buff, strlen(buff),
 		MSG_CONFIRM, (const struct sockaddr *) &serverAddress,
 			sizeof(serverAddress));
+
+		printf("mensagem enviada\n");
 		// write(sock, buff, strlen(buff)-1);
 		bzero(buff, sizeof(buff));
 
@@ -75,10 +77,11 @@ void exchangeMessages(int sock, struct sockaddr_in* serverAddress) {
 int main() {
 	int sockfd, sock;
 	char buff[MAX];
+	char *hello = "Hello from client";
 	struct sockaddr_in serverAddress;
 
     // Cria o socket
-	sock = socket(AF_INET, SOCK_STREAM, 0);
+	sock = socket(AF_INET, SOCK_DGRAM, 0);
 	if ( sock < 0 ) {
 		printf("Falha ao criar o socket... Erro: %d\n", errno);
 		exit(0);
@@ -94,10 +97,10 @@ int main() {
 	
 	// int n, len;
 	
-	// // sendto(sock, (const char *)hello, strlen(hello),
-	// // 	MSG_CONFIRM, (const struct sockaddr *) &serverAddress,
-	// // 		sizeof(serverAddress));
-	// // printf("mensagem inicial enviada.\n");
+	// sendto(sock, (const char *)hello, strlen(hello),
+	// 	MSG_CONFIRM, (const struct sockaddr *) &serverAddress,
+	// 		sizeof(serverAddress));
+	// printf("mensagem inicial enviada.\n");
 		
 	// // n = recvfrom(sock, (char *)buff, MAXLINE,
 	// // 			MSG_WAITALL, (struct sockaddr *) &serverAddress,
@@ -107,7 +110,7 @@ int main() {
 
 
     // printInitialMessage();
-    exchangeMessages(sock, &serverAddress);
+    exchangeMessages(sock, serverAddress);
 
 	close(sock);
 	return 0;

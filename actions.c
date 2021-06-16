@@ -418,7 +418,16 @@ char* removeProfile(char* email)
 /** Funçoes do header */
 
 int treatClientActionRequest(int sock, char* request, struct sockaddr_in clientAddress) {
+    printf("o request é: %s\n", request);
 	char* token = strtok(request, ";");
+    while (token != NULL) {
+        printf("%s, ", token);
+  
+        // Use of strtok
+        // go through other tokens
+        token = strtok(NULL, ";");
+        strcat(request,token);
+    }
     if ((strncmp(request, "exit", 4)) == 0) {
         return -2;
     } else {
@@ -438,6 +447,7 @@ int treatClientActionRequest(int sock, char* request, struct sockaddr_in clientA
                 listHasSkillAction(sock, request, clientAddress);
                 break;
             case 5:
+                printf("o request é: %s\n", request);
                 listGraduatedOnYearAction(sock, request, clientAddress);
                 break;
             case 6:
@@ -545,8 +555,10 @@ int listGraduatedOnCourseAction(int sock, char* request,  struct sockaddr_in cli
     char* content;
     char course[50];
     char* token = strtok(request, ";");
+    
     token = strtok(NULL, ";");
     strcpy(course, token);
+    
     
     // printf("Tamanho da resposta: %s\n", responseSize);
     // write(sock, responseSize, strlen(responseSize)+1);
@@ -608,11 +620,17 @@ int listHasSkillAction(int sock, char* request,  struct sockaddr_in clientAddres
 
 // TODO corrigir recebimento do ano (ultimo caractere esta bugado)
 int listGraduatedOnYearAction(int sock, char* request,  struct sockaddr_in clientAddress) {
+    
     char* content;
-    char year[4];
+    char year[6];
     char* token = strtok(request, ";");
+    printf("otamanho do token é: %s \n", request);
     token = strtok(NULL, ";");
+    printf("chegou aqui3333\n");
+    // int size= strlen(token);
+    printf("otamanho do token é: %s \n", token);
     strcpy(year, token);
+    // printf("chegou aqui\n");
 
     // sprintf(responseSize, "%ld", strlen(getYearMessage)+1);
     // printf("Tamanho da resposta: %s\n", responseSize);
@@ -710,7 +728,7 @@ int removeProfileAction(int sock, char* request,  struct sockaddr_in clientAddre
     // write(sock, responseSize, strlen(responseSize)+1);
     // write(sock, content, strlen(content)+1);
     sendto(sock, (const char *)content, strlen(content),
-			MSG_CONFIRM, (const struct sockaddr *) &clientAddress,
+			MSG_CONFIRM, (const struct sockaddr  *) &clientAddress,
 				sizeof(clientAddress));
     printf("%s\n", content);
     return 0;

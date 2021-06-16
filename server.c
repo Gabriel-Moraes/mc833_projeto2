@@ -11,8 +11,8 @@
 
 #include "actions.h"
 
-#define SockAddr struct sockaddr
-#define PORT	 8080
+// #define SockAddr struct sockaddr
+#define PORT 8080
 #define MAX 200
 #define MAXLINE 1024
 char* removeNewLinesServer(char* data){
@@ -36,11 +36,11 @@ void exchangeMessages(int sock, struct sockaddr_in clientAddress, char* buff) {
     // read(sock, buff, sizeof(buff));
 	// Printa a mensagem recebida
     // printf("Mensagem recebida do cliente %d: %s\n", sock, buff);
-	char* buff2 = removeNewLinesServer(buff);
+	// char* buff2 = removeNewLinesServer(buff);
 	printf("esse e o buffer %s<\n", buff);
 	printf("esse e o sock %d<\n", sock);
-	
-	int requestError = treatClientActionRequest(sock, buff2, clientAddress);
+	//printf("o request é: %s\n", buff);
+	int requestError = treatClientActionRequest(sock, buff, clientAddress);
 	if (requestError == -2) {
 	    
         sendto(sock, "5", strlen("5"),
@@ -65,7 +65,7 @@ void exchangeMessages(int sock, struct sockaddr_in clientAddress, char* buff) {
 int main() {
 	char buffer[MAX];
 	bzero(buffer, MAX);
-	char *hello = "Hello from server";
+	// char *hello = "Hello from server";
 	struct sockaddr_in serverAddress, clientAddress;
 	// int client_socket[10];
     int master_socket;
@@ -82,15 +82,8 @@ int main() {
 		printf("Socket criado com sucesso!\n");
 	}
 
-
-	// Creating socket file descriptor
-	// if ( (sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) {
-	// 	perror("socket creation failed");
-	// 	exit(EXIT_FAILURE);
-	// }
 	
-	// memset(&serverAddress, 0, sizeof(serverAddress));
-	// memset(&clientAdress, 0, sizeof(clientAdress));
+	memset(&serverAddress, 0, sizeof(serverAddress));
 	
 	// Atribui valores da porta, do tipo de IP e dos endereços aceitos para o servidor
 	serverAddress.sin_family = AF_INET; // IPv4
@@ -98,8 +91,8 @@ int main() {
 	serverAddress.sin_port = htons(PORT);
 	
 	// Bind the socket with the server address
-    int bindReturn = bind(master_socket, (SockAddr*)&serverAddress, sizeof(serverAddress));
-	if ( bindReturn != 0 )
+    int bindReturn = bind(master_socket, (const struct sockaddr*)&serverAddress, sizeof(serverAddress));
+	if ( bindReturn < 0 )
 	{
 		printf("Falha ao realizar o bind... Erro: %d\n", errno);
 		exit(-1);
@@ -107,24 +100,25 @@ int main() {
 		printf("Bind realizado com sucesso!\n");
 	}
 	while (1) {
+		bzero(buffer, MAX);
+
 		int n;
-		memset(&serverAddress, 0, sizeof(serverAddress));
 		memset(&clientAddress, 0, sizeof(clientAddress));
-		socklen_t lenAddress = sizeof(clientAddress); 
+		int lenAddress = sizeof(clientAddress); 
 		//para ler o dado que está vindo do cliente
 		printf("lendo mensagem do cliente...\n");
-		n = recvfrom(master_socket, (char *)buffer, MAX,
-					MSG_WAITALL, ( struct sockaddr *) &clientAddress,
-					&lenAddress);
+		n = recvfrom(master_socket, (char*)buffer, MAX,
+					MSG_WAITALL, (struct sockaddr *) &clientAddress,
+					(socklen_t *)&lenAddress);
 		buffer[n] = '\0';
 		printf("Mensagem recebida do Cliente : %s\n", buffer);
 		
 		exchangeMessages(master_socket, clientAddress, buffer);
 
-		sendto(master_socket, (const char *)hello, strlen(hello),
-			MSG_CONFIRM, (const struct sockaddr *) &clientAddress,
-				lenAddress);
-		printf("Hello message sent.\n");
+		// sendto(master_socket, (const char *)hello, strlen(hello),
+		// 	MSG_CONFIRM, (const struct sockaddr *) &clientAddress,
+		// 		lenAddress);
+		// printf("Hello message sent.\n");
 	}
 	
 	
