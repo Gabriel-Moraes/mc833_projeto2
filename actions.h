@@ -20,7 +20,7 @@ typedef struct Profile {
 	char professionalExperience[300];
 } Profile;
 
-int treatClientActionRequest(int sock, char* request, struct sockaddr_in clientAddress); 
+int treatClientActionRequest(int sock, char* response, struct sockaddr_in clientAddress); 
 int createProfileAction(int sock, char* response, struct sockaddr_in clientAddress);
 int addProfessionalExperienceAction(int sock, char* request,  struct sockaddr_in clientAddress);
 int listGraduatedOnCourseAction(int sock, char* request,  struct sockaddr_in clientAddress);

@@ -417,17 +417,24 @@ char* removeProfile(char* email)
 
 /** Funçoes do header */
 
-int treatClientActionRequest(int sock, char* request, struct sockaddr_in clientAddress) {
-    printf("o request é: %s\n", request);
-	char* token = strtok(request, ";");
-    while (token != NULL) {
-        printf("%s, ", token);
+int treatClientActionRequest(int sock, char* response, struct sockaddr_in clientAddress) {
+    int size = strlen(response);
+    char request[size];
+    strcpy(request, response);
+    printf("o response é: %s\n", response);
+	char* token = strtok(response, ";");
+    // printf("esse é o request depois do strtok: %s \n", request);
+    // char* response = strtok(NULL, ";");
+    // printf("esse é meu response: %s\n", response);
+    // while (token != NULL) {
+    //     printf("%s, ", token);
   
-        // Use of strtok
-        // go through other tokens
-        token = strtok(NULL, ";");
-        strcat(request,token);
-    }
+    //     // Use of strtok
+    //     // go through other tokens
+    //     token = strtok(NULL, ";");
+        
+    // }
+    printf("chegou aqui\n");
     if ((strncmp(request, "exit", 4)) == 0) {
         return -2;
     } else {
@@ -476,34 +483,36 @@ int createProfileAction(int sock, char* response, struct sockaddr_in clientAddre
     // int size_message = 0;
     // int size_message_teste = 0;
     bzero(responseSize, sizeof(responseSize));
-
+    printf("entrou no criar perfil\n");
+    printf("o response é: %s", response);
     char * token = strtok(response, ";");
-    token =strtok(NULL, ";");
-    strcpy(email, token);
-    // printf( " %s\n", email ); 
-    token = strtok(NULL, ";");
-    strcpy(firstName, token);
-    // printf( " %s\n", lastName ); 
-    token =strtok(NULL, ";");
-    strcpy(lastName , token);
-    // printf( " %s\n", email ); 
-    token = strtok(NULL, ";");
-    strcpy(residence, token);
-    
-    token = strtok(NULL, ";");
-    strcpy(academicBackground, token);
-
-    token = strtok(NULL, ";");
-    strcpy(graduationYear, token);
-
-    token = strtok(NULL, ";");
-    strcpy(skills, token);
-
-    token = strtok(NULL, ";");
-    strcpy(profExp, token);
-
-    token = strtok(NULL, ";");
-    strcpy(responseSize, token);
+    printf("o token é: %s\n", token);
+    char* temp1 =strtok(NULL, ";");
+    strcpy(email, temp1);
+    printf( "email: %s\n", email ); 
+    char* temp2 = strtok(NULL, ";");
+    strcpy(firstName, temp2);
+    printf( " primeiro nome: %s\n", firstName ); 
+    char* temp3 =strtok(NULL, ";");
+    strcpy(lastName , temp3);
+    printf( "ultimo nome: %s\n", lastName ); 
+    char* temp4 = strtok(NULL, ";");
+    strcpy(residence, temp4);
+    printf("residencia é: %s \n", residence);
+    char* temp5 = strtok(NULL, ";");
+    strcpy(academicBackground, temp5);
+    printf("profissao:%s\n", academicBackground);
+    char* temp6 = strtok(NULL, ";");
+    strcpy(graduationYear, temp6);
+    printf("ano de formacao: %s\n", graduationYear);
+    char* temp7 = strtok(NULL, ";");
+    strcpy(skills, temp7);
+    printf("habilidades:%s\n",skills);
+    char* temp8 = strtok(NULL, ";");
+    strcpy(profExp, temp8);
+    printf("experiencia profissional:%s\n",profExp);
+    // char* temp9 = strtok(NULL, ";");
+    // strcpy(responseSize, temp9);
 
     content = createProfile(email,firstName, lastName, residence, academicBackground, graduationYear, skills, profExp);
     
@@ -620,17 +629,20 @@ int listHasSkillAction(int sock, char* request,  struct sockaddr_in clientAddres
 
 // TODO corrigir recebimento do ano (ultimo caractere esta bugado)
 int listGraduatedOnYearAction(int sock, char* request,  struct sockaddr_in clientAddress) {
-    
+    // char* token = strtok(request, ";");
+    // printf("esse é o request depois do strtok: %s \n", request);
+    // char* response = strtok(NULL, ";");
+    // printf("esse é meu response: %s\n", response);
     char* content;
     char year[6];
     char* token = strtok(request, ";");
     printf("otamanho do token é: %s \n", request);
-    token = strtok(NULL, ";");
+    char* temp = strtok(NULL, ";");
     printf("chegou aqui3333\n");
     // int size= strlen(token);
     printf("otamanho do token é: %s \n", token);
-    strcpy(year, token);
-    // printf("chegou aqui\n");
+    strcpy(year, temp);
+    printf("chegou aqui\n");
 
     // sprintf(responseSize, "%ld", strlen(getYearMessage)+1);
     // printf("Tamanho da resposta: %s\n", responseSize);
