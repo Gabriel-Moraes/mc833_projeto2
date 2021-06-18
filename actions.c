@@ -148,53 +148,55 @@ char* removeNewLines(char* data){
     return data;
 }
 
-char* createProfile(char email[30],	char firstName[20],	char lastName[20], char residence[30], char academicBackground[50], char graduationYear[4], 
-                    char skills[300], char professionalExperience[300]) {
-    char email2[30];
-    char professionalExperience2[300];
-    char firstName2[20];
-    char lastName2[20];
-    char residence2[30];
-    char academicBackground2[50];
-    char graduationYear2[4];
-    char skills2[300];
+char* createProfile(Profile newProfile) {
+    // char email2[30];
+    // char professionalExperience2[300];
+    // char firstName2[20];
+    // char lastName2[20];
+    // char residence2[30];
+    // char academicBackground2[50];
+    // char graduationYear2[4];
+    // char skills2[300];
+    printf("o primeiro nome antes de tudo é: %s\n", newProfile.firstName);
     FILE* file = NULL;
-    file = fopen("files/users.csv", "a");
+    file = fopen("files/users.txt", "ab");
 
     if (file == NULL) {
         printf("Falha ao abrir o arquivo!\n");
         return NULL;
     }
 
-    email = removeNewLinesEmail(email);
-    firstName = removeNewLinesFN(firstName);
-    lastName = removeNewLinesLN(lastName);
-    residence = removeNewlinesRes(residence);
-    academicBackground = removeNewLinesAB(academicBackground);
-    graduationYear = removeNewLinesGradY(graduationYear);
-    skills = removeNewLinesSkill(skills);
-    professionalExperience = removeNewLinesProfExp(professionalExperience);
-    strcpy(email2 , removeBlanks(email, email2));
-    strcpy(professionalExperience2 , removeBlanks(professionalExperience, professionalExperience2));
-    strcpy(firstName2 , removeBlanks(firstName, firstName2));
-    strcpy(lastName2 , removeBlanks(lastName, lastName2));
-    strcpy(residence2 , removeBlanks(residence, residence2));
-    strcpy(academicBackground2 , removeBlanks(academicBackground, academicBackground2));
-    strcpy(graduationYear2 , removeBlanks(graduationYear, graduationYear2));
-    strcpy(skills2 , removeBlanks(skills, skills2));  
+    // email = removeNewLinesEmail(email);
+    // firstName = removeNewLinesFN(firstName);
+    // lastName = removeNewLinesLN(lastName);
+    // residence = removeNewlinesRes(residence);
+    // academicBackground = removeNewLinesAB(academicBackground);
+    // graduationYear = removeNewLinesGradY(graduationYear);
+    // skills = removeNewLinesSkill(skills);
+    // professionalExperience = removeNewLinesProfExp(professionalExperience);
+    // strcpy(email2 , removeBlanks(email, email2));
+    // strcpy(professionalExperience2 , removeBlanks(professionalExperience, professionalExperience2));
+    // strcpy(firstName2 , removeBlanks(firstName, firstName2));
+    // strcpy(lastName2 , removeBlanks(lastName, lastName2));
+    // strcpy(residence2 , removeBlanks(residence, residence2));
+    // strcpy(academicBackground2 , removeBlanks(academicBackground, academicBackground2));
+    // strcpy(graduationYear2 , removeBlanks(graduationYear, graduationYear2));
+    // strcpy(skills2 , removeBlanks(skills, skills2));  
 
     // Cria um novo perfil com base nas informaçoes recebidas
 
-    Profile newProfile;
-    strcpy(newProfile.email, email2);
-    strcpy(newProfile.firstName, firstName2);
-    strcpy(newProfile.lastName, lastName2);
-    strcpy(newProfile.residence, residence2);
-    strcpy(newProfile.academicBackground, academicBackground2);
-    strcpy(newProfile.graduationYear, graduationYear2);
-    strcpy(newProfile.skills, skills2);
-    strcpy(newProfile.professionalExperience, professionalExperience2);
-
+    // Profile newProfile;
+    // strcpy(newProfile.email, email);
+    // strcpy(newProfile.firstName, firstName);
+    // strcpy(newProfile.lastName, lastName);
+    // strcpy(newProfile.residence, residence);
+    // strcpy(newProfile.academicBackground, academicBackground);
+    // strcpy(newProfile.graduationYear, graduationYear);
+    // strcpy(newProfile.skills, skills);
+    // strcpy(newProfile.professionalExperience, professionalExperience);
+    printf("o ano a ser inserido é:%s\n", newProfile.graduationYear);
+    printf("o nome a ser inserido é:%s \n", newProfile.firstName);
+    
     int returnCode = fwrite (&newProfile, sizeof(Profile), 1,file);
     if (returnCode) {
         printf("Perfil inserido com sucesso!\n");    
@@ -209,7 +211,7 @@ char* createProfile(char email[30],	char firstName[20],	char lastName[20], char 
 
 char* addProfessionalExperience(char email[30], int sock, char profExp[300]) {
     FILE* file = NULL;
-    file = fopen("files/users.csv", "r");
+    file = fopen("files/users.txt", "ab");
 
     if (file == NULL) {
         printf("Falha ao abrir o arquivo!\n");
@@ -251,7 +253,7 @@ char* addProfessionalExperience(char email[30], int sock, char profExp[300]) {
 
 char* listGraduatedOnCourse(char* course) {
     FILE* file = NULL;
-    file = fopen("files/users.csv", "r");
+    file = fopen("files/users.txt", "rb");
 
     if (file == NULL) {
         printf("Falha ao abrir o arquivo!\n");
@@ -293,7 +295,7 @@ char* listGraduatedOnCourse(char* course) {
 
 char* listHasSkill(char* skill) {
     FILE* file = NULL;
-    file = fopen("files/users.csv", "r");
+    file = fopen("files/users.txt", "rb");
 
     if (file == NULL) {
         printf("Falha ao abrir o arquivo!\n");
@@ -326,27 +328,34 @@ char* listHasSkill(char* skill) {
 // se o codigo está funcionando corretamente
 char* listGraduatedOnYear(char* year) {
     FILE* file = NULL;
-    file = fopen("files/users.csv", "r");
+    file = fopen("files/users.txt", "rb");
 
     if (file == NULL) {
         printf("\tFalha ao abrir o arquivo!\n");
         return NULL;
     }
-
+    printf("o ano é:%s\n",year);
     Profile searchedProfile;
     char* response = malloc(90);
     char* yearNoNewLine = removeNewLines(year);
     while(fread(&searchedProfile, sizeof(Profile), 1, file)) {
         printf("\tLendo o arquivo...\n");
         printf("%s\n", searchedProfile.graduationYear);
-        if(!strcmp(searchedProfile.graduationYear, yearNoNewLine)) {
+        
+        if(strstr(searchedProfile.graduationYear, yearNoNewLine) != NULL) {
             printf("\tPerfil encontrado! Enviando informaçoes...\n");
+            printf("o emails encontrados :%s\n", searchedProfile.email);
+            printf("anos encontrados :%s\n", searchedProfile.graduationYear);
+            printf("primeiro nome:%s\n", searchedProfile.firstName);
+            printf("ultimo nome:%s\n", searchedProfile.lastName);
+            printf("formacao: %s\n", searchedProfile.academicBackground);
             sprintf(response, "%s\n%s\n%s\n%s\n", searchedProfile.email, searchedProfile.firstName, 
                         searchedProfile.lastName, searchedProfile.academicBackground);
         }
     }
     strcmp("",response) == 0 ? printf("\tNao foi encontrado um perfil com este ano de formatura\n") : 
                       printf("\tRetornando perfis com este ano de formatura\n");
+    printf("o perfil que sera enviado é: %s\n", response);
     return response;
 
 }
@@ -354,7 +363,7 @@ char* listGraduatedOnYear(char* year) {
 // TODO Corrigir segmantation fault
 char* getProfileInfo(char* email) {  
     FILE* file = NULL;
-    file = fopen("files/users.csv", "r");
+    file = fopen("files/users.txt", "rb");
 
     if (file == NULL) {
         printf("Falha ao abrir o arquivo!\n");
@@ -384,8 +393,8 @@ char* getProfileInfo(char* email) {
 char* removeProfile(char* email)
 {
     FILE* file = NULL;
-    file = fopen("files/users.csv", "r+");
-    FILE* newfile = fopen("temp.csv", "w");
+    file = fopen("files/users.txt", "r+");
+    FILE* newfile = fopen("temp.txt", "w");
     if (file == NULL) {
         printf("Falha ao abrir o arquivo!\n");
         return NULL;
@@ -406,8 +415,8 @@ char* removeProfile(char* email)
     
     fclose(newfile);
     fclose(file);
-    remove("users.csv");
-    rename("temp.csv", "users.csv");
+    remove("users.txt");
+    rename("temp.txt", "users.txt");
     if(success) {
         return "Perfil removido!";
     } else{
@@ -481,6 +490,7 @@ int createProfileAction(int sock, char* response, struct sockaddr_in clientAddre
     char email[30], firstName[20], lastName[20], residence[30], academicBackground[50], graduationYear[4], skills[300],
 	    profExp[300], responseSize[MAX];
     // int size_message = 0;
+    Profile newProfile;
     // int size_message_teste = 0;
     bzero(responseSize, sizeof(responseSize));
     printf("entrou no criar perfil\n");
@@ -489,36 +499,90 @@ int createProfileAction(int sock, char* response, struct sockaddr_in clientAddre
     printf("o token é: %s\n", token);
     char* temp1 =strtok(NULL, ";");
     strcpy(email, temp1);
+    strcpy(newProfile.email, email);
     printf( "email: %s\n", email ); 
     char* temp2 = strtok(NULL, ";");
     strcpy(firstName, temp2);
     printf( " primeiro nome: %s\n", firstName ); 
+    strcpy(newProfile.firstName, firstName);
     char* temp3 =strtok(NULL, ";");
+    printf( " primeiro nome: %s\n", firstName ); 
     strcpy(lastName , temp3);
+    strcpy(newProfile.lastName, lastName);
     printf( "ultimo nome: %s\n", lastName ); 
     char* temp4 = strtok(NULL, ";");
     strcpy(residence, temp4);
+    strcpy(newProfile.residence, residence);
     printf("residencia é: %s \n", residence);
+
     char* temp5 = strtok(NULL, ";");
     strcpy(academicBackground, temp5);
+    strcpy(newProfile.academicBackground, academicBackground);
     printf("profissao:%s\n", academicBackground);
     char* temp6 = strtok(NULL, ";");
     strcpy(graduationYear, temp6);
+    strcpy(newProfile.graduationYear, graduationYear);
     printf("ano de formacao: %s\n", graduationYear);
     char* temp7 = strtok(NULL, ";");
     strcpy(skills, temp7);
+    strcpy(newProfile.skills, skills);
     printf("habilidades:%s\n",skills);
+    
     char* temp8 = strtok(NULL, ";");
     strcpy(profExp, temp8);
     printf("experiencia profissional:%s\n",profExp);
+    strcpy(newProfile.professionalExperience, profExp);
     // char* temp9 = strtok(NULL, ";");
     // strcpy(responseSize, temp9);
-
-    content = createProfile(email,firstName, lastName, residence, academicBackground, graduationYear, skills, profExp);
+    printf("o primeiro nome antes da struct é: %s\n", firstName);
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    // content = createProfile(email,firstName, lastName, residence, academicBackground, graduationYear, skills, profExp);
+    //  content = createProfile(newProfile);
     // size_t sizeFinalMessage = strlen(content);
     // size_message = (int)(sizeFinalMessage);
     // sprintf(responseSize, "%d", size_message);
+    /*
+    *
+    * Inserindo a função do createProfile a partir deste ponto
+    * 
+    * */
+    printf("o primeiro nome antes de tudo é: %s\n", newProfile.firstName);
+    FILE* file = NULL;
+    file = fopen("files/users.txt", "ab");
+
+    if (file == NULL) {
+        printf("Falha ao abrir o arquivo!\n");
+        content = NULL;
+    }
+
+    
+    printf("o ano a ser inserido é:%s\n", newProfile.graduationYear);
+    printf("o nome a ser inserido é:%s \n", newProfile.firstName);
+    
+    int returnCode = fwrite (&newProfile, sizeof(Profile), 1,file);
+    if (returnCode) {
+        printf("Perfil inserido com sucesso!\n");    
+        fclose(file);
+        content = "Perfil inserido com sucesso!\n";
+    } else {
+        printf("Falha ao inserir perfil!\n");
+        fclose(file);
+        content = "Falha ao inserir perfil!\n";
+    }
+   /*
+    *
+    * Finalizando a função do createProfile a partir deste ponto
+    * 
+    * */
     sendto(sock, (const char *)content, strlen(content),
 		MSG_CONFIRM, (const struct sockaddr *) &clientAddress,
 				sizeof(clientAddress));
@@ -596,30 +660,12 @@ int listHasSkillAction(int sock, char* request,  struct sockaddr_in clientAddres
     char skill[50];
     // bzero(responseSize, sizeof(responseSize));
     char* token = strtok(request, ";");
-    token = strtok(NULL, ";");
-    strcpy(skill, token);
+    char* temp = strtok(NULL, ";");
+    strcpy(skill, temp);
 
-    // size_t size = strlen(getSkillMessage); 
-    // int size_message = (int)(size);
-    // sprintf(responseSize, "%d", size_message);
-
-    // printf("Tamanho da resposta: %s\n", responseSize);
-    // printf("Enviando solicitaçao da habilidade...\n");
-    // write(sock, responseSize, strlen(responseSize)+1);
-    // printf("Tamanho da resposta enviado...\n");
-    // write(sock, getSkillMessage, strlen(getSkillMessage)+1);
-    // printf("Mensagem enviada...\n");
-    // read(sock, skill, sizeof(skill));
-    // printf("Habilidade lida...(%s)\n", skill);
 
     content = listHasSkill(skill);
-
-    // size_t sizeFinalMessage = strlen(content);
-    // size_message = (int)(sizeFinalMessage);
-    // sprintf(responseSize, "%d", size_message);
-
-    // write(sock, responseSize, strlen(responseSize)+1);
-    // write(sock, content, strlen(content)+1);
+    printf("o perfil encontrado foi: %s\n",content);
     sendto(sock, (const char *)content, strlen(content),
 		MSG_CONFIRM, (const struct sockaddr *) &clientAddress,
 				sizeof(clientAddress));
@@ -629,40 +675,26 @@ int listHasSkillAction(int sock, char* request,  struct sockaddr_in clientAddres
 
 // TODO corrigir recebimento do ano (ultimo caractere esta bugado)
 int listGraduatedOnYearAction(int sock, char* request,  struct sockaddr_in clientAddress) {
-    // char* token = strtok(request, ";");
-    // printf("esse é o request depois do strtok: %s \n", request);
-    // char* response = strtok(NULL, ";");
-    // printf("esse é meu response: %s\n", response);
+    
     char* content;
     char year[6];
     char* token = strtok(request, ";");
-    printf("otamanho do token é: %s \n", request);
+    // printf("otamanho do token é: %s \n", request);
     char* temp = strtok(NULL, ";");
-    printf("chegou aqui3333\n");
+    // printf("chegou aqui3333\n");
     // int size= strlen(token);
-    printf("otamanho do token é: %s \n", token);
+    // printf("otamanho do token é: %s \n", token);
     strcpy(year, temp);
-    printf("chegou aqui\n");
+    // printf("chegou aqui\n");
 
-    // sprintf(responseSize, "%ld", strlen(getYearMessage)+1);
-    // printf("Tamanho da resposta: %s\n", responseSize);
-    // printf("Enviando solicitaçao do ano...\n");
-    // write(sock, responseSize, strlen(responseSize)+1);
-    // printf("\tTamanho da resposta enviado...\n");
-    // write(sock, getYearMessage, strlen(getYearMessage)+1);
-    // printf("\tSolicitaçao do ano enviada...\n");
-    // read(sock, year, sizeof(year));
-    // printf("\tAno lido...(%s)\n", year);
-   
     content = listGraduatedOnYear(year);
+    printf("o perfil encontrado foi: %s\n",content);
+    int tamanho = strlen(content);
+    printf("o tamanho da resposta é:%d\n", tamanho);
     sendto(sock, (const char *)content, strlen(content),
 		MSG_CONFIRM, (const struct sockaddr *) &clientAddress,
 				sizeof(clientAddress));
-    // size_t sizeFinalMessage = strlen(content);
-    // sprintf(responseSize, "%d", (int) sizeFinalMessage);
-
-    // write(sock, responseSize, strlen(responseSize)+1);
-    // write(sock, content, strlen(content)+1);
+    
     printf("Conteudo enviado...\n");
     return 0;
 }
@@ -670,7 +702,7 @@ int listGraduatedOnYearAction(int sock, char* request,  struct sockaddr_in clien
 int listAllProfilesAction(int sock, char* request,  struct sockaddr_in clientAddress) {
     // Abre o arquivo dos usuarios
     FILE* file = NULL;
-    file = fopen("files/users.csv", "r");
+    file = fopen("files/users.txt", "r");
 
     if (file == NULL) {
         printf("Falha ao abrir arquivo!\n");

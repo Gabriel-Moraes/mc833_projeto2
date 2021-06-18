@@ -24,6 +24,7 @@ void printInitialMessage() {
 }
 void exchangeMessages(int sock, struct sockaddr_in serverAddress) {
 	char buff[MAX];
+	char buffer_response[MAX];
 	int n, responseSize;
 	int len;
 	while(1) {
@@ -41,13 +42,13 @@ void exchangeMessages(int sock, struct sockaddr_in serverAddress) {
 
 		printf("mensagem enviada\n");
 		// write(sock, buff, strlen(buff)-1);
-		bzero(buff, sizeof(buff));
+		// bzero(buff, sizeof(buff));
 
 		// Le o tamanho do retorno
-        responseSize = recvfrom(sock, (char *)buff, MAX,
+        responseSize = recvfrom(sock, (char *)buffer_response, MAX,
 				MSG_WAITALL, (struct sockaddr *) &serverAddress,
 				&len);
-	    buff[n] = '\0';
+	    buffer_response[responseSize] = '\0';
 		// responseSize = 0;
 		// read(sock, buff, 10);
 		// responseSize = atoi(buff);
@@ -55,7 +56,7 @@ void exchangeMessages(int sock, struct sockaddr_in serverAddress) {
 
 		// bzero(buff, sizeof(buff));
 		printf("Resposta do servidor:\n");
-        printf(" %s\n", buff);
+        printf(" %s\n", buffer_response);
 		// Imprime a resposta completa do servidor, mesmo que envolva mais de uma operaçao no buff
 		// while(responseSize > 0) {
 		// 	read(sock, buff, sizeof(buff));
