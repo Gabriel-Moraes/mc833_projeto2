@@ -15,8 +15,8 @@
 
 ### Executando o projeto
 
-# Clonar este repositório
-# No diretíorio dele, deve-se executar os seguintes comandos:
+--> Clonar este repositório
+--> No diretíorio dele, deve-se executar os seguintes comandos:
     Compilar servidor: gcc -Wall server.c actions.c -o server
     Iniciar o servidor:  ./server oy
 
