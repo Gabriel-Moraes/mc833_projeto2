@@ -3,11 +3,11 @@
 
 ### Features
 
-- [ ] Cadastrar um novo perfil
+- [x] Cadastrar um novo perfil
 - [ ] Adicionar uma experiencia profissional
 - [ ] Listar todas as pessoas formadas em um determinado curso
 - [ ] Listar todas as pessoas que possuam uma determinada habilidade
-- [ ] Listar todas as pessoas formadas em um determinado ano
+- [x] Listar todas as pessoas formadas em um determinado ano
 - [ ] Listar todas as informações de todos os perfis
 - [ ] Dado o email de um perfil, retornar suas informações
 - [ ] Remover um perfil a partir de seu email
@@ -16,7 +16,9 @@
 ### Executando o projeto
 
 --> Clonar este repositório
+
 --> No diretíorio dele, deve-se executar os seguintes comandos:
+
     Compilar servidor: gcc -Wall server.c actions.c -o server
     Iniciar o servidor:  ./server oy
 
